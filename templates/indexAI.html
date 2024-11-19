@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Inspection App - Auto-Filled</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            background-image: url('http://127.0.0.1:8000/static/2222.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .navbar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="submit"],
+        .home-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            color: white;
+            box-sizing: border-box;
+            display: block;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+        }
+        .home-button {
+            background-color: #FF7043;
+        }
+        input[type="submit"]:hover,
+        .home-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(90%);
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        @media only screen and (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            textarea {
+                font-size: 14px;
+            }
+        }
+        @media only screen and (max-width: 480px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            textarea {
+                font-size: 14px;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/profile">Profile</a>
+    <a href="/about">About</a>
+</div>
+<div class="container">
+    <h1>Ship Inspection App - Auto-Filled mit LLM</h1>
+
+    <!-- Anzeige der bereinigten Antwort als Erklärung für den Benutzer -->
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #e0f7fa; border-radius: 5px;">
+        <strong>Bereinigte Antwort von OpenAI:</strong>
+        <p>{{ clean_response }}</p>
+    </div>
+
+    <form action="/login/formular/submit/" method="post">
+        <label for="inspection_location">Inspection Location:</label>
+        <input type="text" id="inspection_location" name="inspection_location" value="{{ data['inspection location'] }}" required>
+
+        <label for="device_name">Device Name:</label>
+        <input type="text" id="device_name" name="device_name" value="{{ data['device name'] }}" required>
+
+        <label for="inspection_date">Inspection Date:</label>
+        <input type="date" id="inspection_date" name="inspection_date" value="{{ data['inspection date'] }}" required>
+
+        <label for="inspection_details">Inspection Details:</label>
+        <textarea id="inspection_details" name="inspection_details" rows="5" required>{{ data['inspection details'] }}</textarea>
+
+        <label for="kältepump">Kältepump:</label>
+        <input type="number" id="kältepump" name="kältepump" min="0" step="1" value="{{ data['kältepump'] }}" required>
+
+        <div class="button-container">
+            <input type="submit" value="✔️ Submit">
+            <a href="/" class="home-button">🏠 Home</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

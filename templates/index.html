@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Inspection App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            background-image: url('http://127.0.0.1:8000/static/8888.png');
+           /* background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');*/
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 89vh;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input[type="submit"],
+        .download-button,
+        .home-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-sizing: border-box;
+            color: white;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+        }
+
+        .download-button {
+            background-color: #008CBA;
+        }
+
+        .home-button {
+            background-color: #ce5565;
+        }
+
+        input[type="submit"]:hover,
+        .download-button:hover,
+        .home-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(90%);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 11px;
+        }
+
+        .button-container .emoji {
+            margin-right: 10px;
+        }
+
+        /* Responsive Design */
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+            input[type="submit"], .home-button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+        @media only screen and (min-width: 601px) and (max-width: 1024px) {
+            .container {
+                max-width: 80%;
+            }
+            h2 {
+                font-size: 28px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/profile">Profile</a>
+    <a href="/about">About</a>
+</div>
+<div class="container">
+    <h1>Ship Inspection App(manuel Form)</h1>
+    <div class="welcome-message">
+        <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
+    </div>
+    <form action="/login/formular/submit/" method="post">
+        <label for="inspection_location">Inspection Location:</label>
+        <select id="inspection_location" name="inspection_location" required>
+            <option value="" disabled selected>Select a location</option>
+            <option value="berlin">Berlin</option>
+            <option value="greifswald">Greifswald</option>
+            <option value="hamburg">Hamburg</option>
+            <option value="mashhad">Mashhad</option>
+            <option value="tehran">Tehran</option>
+            <option value="stralsund">Stralsund</option>
+            <option value="new_york">New York</option>
+            <option value="london">London</option>
+            <option value="paris">Paris</option>
+            <option value="tokyo">Tokyo</option>
+        </select>
+
+        <label for="device_name">Device Name:</label>
+        <input type="text" id="device_name" name="device_name" required>
+
+        <label for="inspection_date">Inspection Date:</label>
+        <input type="date" id="inspection_date" name="inspection_date" required>
+
+        <label for="inspection_details">Inspection Details:</label>
+        <textarea id="inspection_details" name="inspection_details"></textarea>
+
+        <label for="kältepump">Kältepump:</label>
+        <input type="number" id="kältepump" name="kältepump" required>
+
+        <div class="button-container">
+            <input type="submit" value="✔️ Submit" required>
+            <a href="/text_input" class="download-button"> 🤖 Go to AI Form</a>
+            <a href="/" class="home-button">🏠 Back to Homepage</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

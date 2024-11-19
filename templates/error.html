@@ -1,0 +1,50 @@
+<!-- templates/error.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Fehler</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h1 { color: #ff0000; }
+        p { color: #333; }
+            @media only screen and (max-width: 600px) {
+  .container {
+    max-width: 90%;
+    margin: 30px auto;
+    padding: 10px;
+  }
+  h1 {
+    font-size: 36px;
+  }
+  p {
+    font-size: 18px;
+  }
+  .button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  .container {
+    max-width: 70%;
+  }
+  h1 {
+    font-size: 42px;
+  }
+  .button {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ein Fehler ist aufgetreten</h1>
+        <p>{{ detail }}</p>
+    </div>
+</body>
+</html>
