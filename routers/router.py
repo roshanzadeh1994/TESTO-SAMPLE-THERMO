@@ -199,7 +199,7 @@ async def download_device_inspections(db: Session = Depends(get_db)):
             "device Name": [inspection.device_name for inspection in inspections],
             "Inspection Date": [inspection.inspection_date for inspection in inspections],
             "Inspection Details": [inspection.inspection_details for inspection in inspections],
-            "Numerical value": [inspection.kältepump for inspection in inspections],
+            "Kältepump": [inspection.kältepump for inspection in inspections],
             "User_id": [inspection.user_id for inspection in inspections]
 
         }

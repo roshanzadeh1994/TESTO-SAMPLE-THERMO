@@ -150,7 +150,7 @@ Fehlerbehandlung:
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
                 {"role": "user",
-                "content": f"Extrahiere die relevanten Informationen aus dem Text {userText} basierend auf den folgenden Schlüsseln: 'inspection location', 'device name', 'inspection date', 'inspection details' und 'kältepump'"
+                "content": f"Extrahiere die relevanten Informationen aus dem Text {userText} basierend auf den folgenden Schlüsseln: 'inspection location', 'device name', 'inspection date', 'inspection details' und 'kältepump' Kältepump muss nur nummer sein"
                  }
             ],
          
