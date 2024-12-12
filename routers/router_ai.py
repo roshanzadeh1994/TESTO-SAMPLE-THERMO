@@ -135,7 +135,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
     1. Sendet den vom Benutzer eingegebenen Text an das GPT-4-Modell und bittet um Extraktion der relevanten Daten (z.B. 'inspection location', 'device name', 'inspection date', 'inspection details', 'kältepump').
     2. Verarbeitet die Antwort der OpenAI-API und extrahiert die relevanten Daten in ein Dictionary.
     3. Überprüft, ob alle erforderlichen Daten extrahiert wurden. Falls Daten fehlen, fordert es den Benutzer auf, die fehlenden Informationen anzugeben.
-    4. Wenn alle Daten vorhanden sind, wird die Antwort im Template "indexAI.html" dargestellt.
+    4. Wenn alle Daten vorhanden sind, wird die Antwort im Template "indexAI.html" dargestellt..
 
     Rückgabewert:
     - HTMLResponse: Stellt entweder die extrahierten Daten oder ein Template zur Ergänzung fehlender Informationen dar.
