@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
 
-load_dotenv(dotenv_path="C:/Users/1000len-8171/Desktop/testo-sample/.env")
+load_dotenv(dotenv_path="C:/Users/1000len-8171/Desktop/testo-sample-thermo/.env")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -105,7 +105,7 @@ def extract_data_from_ai_response(response_content: str) -> dict:
                 key = 'inspection date'
             if 'details' in key or 'beschreibung' in key or 'erklärung' in key:
                 key = 'inspection details'
-            if 'numerisch' in key or 'number' in key or 'wert' in key or 'kälte' in key or 'pump' in key:
+            if 'numerisch' in key or 'number' in key or 'wert' in key or 'kälte' in key or 'pump' in key or 'kältepump' in key:
                 key = 'kältepump'
 
             ai_user_data[key] = value
@@ -150,7 +150,7 @@ Fehlerbehandlung:
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
                 {"role": "user",
-                "content": f"Extrahiere die relevanten Informationen aus dem Text {userText} basierend auf den folgenden Schlüsseln: 'inspection location', 'device name', 'inspection date', 'inspection details' und 'kältepump'"
+                "content": f"Extrahiere die relevanten Informationen aus dem Text {userText} basierend auf den folgenden Schlüsseln: 'inspection location', 'device name', 'inspection date', 'inspection details' und 'kältepump' Kältepump muss nur nummer sein"
                  }
             ],
          

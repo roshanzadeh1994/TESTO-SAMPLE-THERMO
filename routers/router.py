@@ -199,7 +199,7 @@ async def download_device_inspections(db: Session = Depends(get_db)):
             "device Name": [inspection.device_name for inspection in inspections],
             "Inspection Date": [inspection.inspection_date for inspection in inspections],
             "Inspection Details": [inspection.inspection_details for inspection in inspections],
-            "Numerical value": [inspection.kältepump for inspection in inspections],
+            "Kältepump": [inspection.kältepump for inspection in inspections],
             "User_id": [inspection.user_id for inspection in inspections]
 
         }
@@ -220,3 +220,17 @@ async def download_device_inspections(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 #
+@router.get("/dynamic_form_fields")
+async def get_dynamic_form_fields():
+    """
+    Gibt dynamisch die Felder für das Formular zurück.
+    """
+    # Beispielhafte Logik: Die Felder könnten aus einer Datenbank oder Konfiguration kommen.
+    fields = [
+        {"name": "inspection_location", "type": "text", "required": True},
+        {"name": "device_name", "type": "text", "required": True},
+        {"name": "inspection_date", "type": "date", "required": True},
+        {"name": "inspection_details", "type": "textarea", "required": False},
+        {"name": "kältepump", "type": "number", "required": True},
+    ]
+    return {"fields": fields}
