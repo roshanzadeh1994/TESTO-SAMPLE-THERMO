@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form</title>
+</head>
+<body>
+    <h1>Dynamic Form</h1>
+    <form action="/submit_dynamic_form" method="post">
+        {% for key, value in data.items() %}
+        <label for="{{ key }}">{{ key }}:</label>
+        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
