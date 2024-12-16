@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, Depends, Request, UploadFile, File
+from fastapi import APIRouter, Form, Depends, Request, UploadFile, File, HTTPException, Cookie
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
@@ -46,28 +46,38 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
     ai_response = response['choices'][0]['message']['content']
     ai_data = extract_data_from_ai_response(ai_response)
 
-    # Save to database
-    device_inspection = DeviceInspection(data=ai_data, user_id=1)  # Beispielhaft User ID 1
-    db.add(device_inspection)
-    db.commit()
-    db.refresh(device_inspection)
+
 
     return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data})
 
 
 
+
+
+
 @router.post("/submit_dynamic_form", response_class=HTMLResponse)
-async def submit_dynamic_form(request: Request, db: Session = Depends(get_db)):
+async def submit_dynamic_form(
+    request: Request, 
+    db: Session = Depends(get_db), 
+    user_id: str = Cookie(None), 
+    username: str = Cookie(None)
+):
+    # Prüfen, ob der Benutzer authentifiziert ist
+    if not user_id or not username:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    
+    # Formulardaten extrahieren
     form_data = await request.form()
     data = {key: form_data[key] for key in form_data.keys()}
 
-    # Save to database
-    device_inspection = DeviceInspection(data=data, user_id=1)  # Beispielhaft User ID 1
+    # Datenbankeintrag erstellen
+    device_inspection = DeviceInspection(data=data, user_id=int(user_id))
     db.add(device_inspection)
     db.commit()
     db.refresh(device_inspection)
 
     return templates.TemplateResponse("success.html", {"request": request, "data": data})
+
 
 
 @router.get("/process_voice", response_class=HTMLResponse)
@@ -114,11 +124,6 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         ai_response = response['choices'][0]['message']['content']
         ai_data = extract_data_from_ai_response(ai_response)
 
-        # Daten in die Datenbank speichern
-        device_inspection = DeviceInspection(data=ai_data, user_id=1)  # Beispielhaft User ID 1
-        db.add(device_inspection)
-        db.commit()
-        db.refresh(device_inspection)
 
         # Temporäre Datei löschen
         os.remove(temp_audio_file_path)
