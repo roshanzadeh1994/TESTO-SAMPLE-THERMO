@@ -102,7 +102,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
     #if ai_data["inspection date"]:
             #ai_data["inspection date"] = parse_date(ai_data['inspection date'])
 
-    return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data})
+    return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data, "clean_response": ai_response_clean})
 
 
 
@@ -193,7 +193,7 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         # Temporäre Datei löschen
         os.remove(temp_audio_file_path)
 
-        return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data})
+        return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data, "clean_response": ai_response_clean})
 
     except Exception as e:
         return templates.TemplateResponse("error.html", {"request": request, "error": str(e)})

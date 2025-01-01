@@ -6,103 +6,142 @@
     <title>Dynamic Form</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Reset and global styles */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif, Arial, Helvetica, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            background: linear-gradient(135deg, #84fab0, #8fd3f4);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             padding: 20px;
         }
+
         .navbar {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-    }
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
 
-    .navbar a {
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      text-align: center;
-      transition: background-color 0.3s;
-      margin-right: 10px;
-    }
+        .navbar a {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            margin-right: 15px;
+        }
 
-    .navbar a:hover {
-      background-color: #ddd;
-      color: black;
-    }
+        .navbar a:hover {
+            background-color: #f9a825;
+            color: black;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            margin-top: 80px; /* Space for navbar */
+        }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
-            color: #333;
-        }
-
-        form {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
+            color: #444;
+            font-size: 2rem;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 500;
-            color: #555;
+            color: #333;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 16px;
-            transition: 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input[type="text"]:focus {
-            border-color: #007bff;
+            border-color: #00bfa5;
             outline: none;
-            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 191, 165, 0.4);
         }
 
         button {
-            background: #007bff;
+            background: linear-gradient(90deg, #00bfa5, #1de9b6);
             color: white;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 500;
             width: 100%;
             margin-top: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.2s;
         }
 
         button:hover {
-            background: #0056b3;
+            background: linear-gradient(90deg, #1de9b6, #00bfa5);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .navbar a {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -113,15 +152,24 @@
         <a href="/login">Login</a>
         <a href="/signup">Signup</a>
         <a href="/about">About</a>
-      
-      </div>
-    <form action="/submit_dynamic_form" method="post">
-        <h1>Dynamic Form</h1>
-        {% for key, value in data.items() %}
-        <label for="{{ key }}">{{ key }}:</label>
-        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
-        {% endfor %}
-        <button type="submit">Submit</button>
-    </form>
+    </div>
+
+    <div class="container">
+        <h1>Ship Inspection App - Auto-Filled mit LLM</h1>
+
+        <!-- Anzeige der bereinigten Antwort als Erklärung für den Benutzer -->
+        <div class="info-box">
+            <strong>Bereinigte Antwort von OpenAI:</strong>
+            <p>{{ clean_response }}</p>
+        </div>
+
+        <form action="/submit_dynamic_form" method="post">
+            {% for key, value in data.items() %}
+            <label for="{{ key }}">{{ key }}:</label>
+            <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" aria-label="{{ key }}">
+            {% endfor %}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
