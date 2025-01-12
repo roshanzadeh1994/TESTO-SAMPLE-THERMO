@@ -155,19 +155,29 @@
     </div>
 
     <div class="container">
-        <h1>Ship Inspection App - Auto-Filled mit LLM</h1>
+        <h1>dynamic App - Auto-Filled mit LLM</h1>
 
         <!-- Anzeige der bereinigten Antwort als Erklärung für den Benutzer -->
         <div class="info-box">
-            <strong>Bereinigte Antwort von OpenAI:</strong>
+            <strong>OpenAI’s corrected response::</strong>
             <p>{{ clean_response }}</p>
         </div>
 
         <form action="/submit_dynamic_form" method="post">
+
+            <!-- Sicherstellen, dass das Feld "Firstname" immer vorhanden ist -->
+            <label for="Firstname">First name:</label>
+            <input type="text" id="Firstname" name="Firstname" value="{{ data.get('Firstname') or data.get('First Name') or data.get('First name') or data.get('Name', '') }}" required>
+        
+            <!-- Dynamisch generierte Felder -->
             {% for key, value in data.items() %}
-            <label for="{{ key }}">{{ key }}:</label>
-            <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" aria-label="{{ key }}">
+                {% set normalized_key = key.lower().replace(' ', '') %} <!-- Normalisiere den Schlüssel -->
+                {% if normalized_key not in ['Firstname', 'firstname', 'First Name','First name'] %}
+                    <label for="{{ key }}">{{ key }}:</label>
+                    <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" aria-label="{{ key }}">
+                {% endif %}
             {% endfor %}
+        
             <button type="submit">Submit</button>
         </form>
     </div>

@@ -87,7 +87,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
     response = openai.ChatCompletion.create(
         model="gpt-4-turbo",
         messages=[
-            {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text."},
+            {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text(fill out in English language)."},
             {"role": "user", "content": f"{userText}"}
         ]
     )
@@ -99,8 +99,14 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
     ai_data = extract_data_from_ai_response(ai_response_clean)
     ai_data = {key.replace('-', '').strip(): value for key, value in ai_data.items()}
 
-    #if ai_data["inspection date"]:
-            #ai_data["inspection date"] = parse_date(ai_data['inspection date'])
+# Überprüfung auf das erforderliche Feld "First and Lastname"
+    required_field = "First and Lastname" or "Firstname and Lastname"
+    if required_field.lower not in ai_data or not ai_data[required_field]:
+        warning_message = f"The field '{required_field}' is required. Please fill it out."
+        return templates.TemplateResponse(
+            "dynamic_form.html",
+            {"request": request, "data": ai_data, "warning": warning_message}
+        )
 
     return templates.TemplateResponse("dynamic_form.html", {"request": request, "data": ai_data, "clean_response": ai_response_clean})
 
@@ -172,7 +178,7 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text."},
+                {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text(fill out in English language)."},
                 {"role": "user", "content": f"{userText}"}
             ]
         )
@@ -186,8 +192,14 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         ai_data = extract_data_from_ai_response(ai_response_clean)
         ai_data = {key.replace('-', '').strip(): value for key, value in ai_data.items()}
 
-        #if ai_data["inspection date"]:
-            #ai_data["inspection date"] = parse_date(ai_data['inspection date'])
+        # Überprüfung auf das erforderliche Feld "First and Lastname"
+        required_field = "First and Lastname"
+        if required_field not in ai_data or not ai_data[required_field].strip():
+            warning_message = f"The field '{required_field}' is required. Please fill it out."
+            return templates.TemplateResponse(
+                "dynamic_form.html",
+                {"request": request, "data": ai_data, "clean_response": ai_response_clean, "warning": warning_message}
+        )
 
 
         # Temporäre Datei löschen
