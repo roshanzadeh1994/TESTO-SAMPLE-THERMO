@@ -11,7 +11,7 @@ import os
 from dotenv import load_dotenv
 import tempfile
 
-router = APIRouter(tags=["router_dynamic"])
+router = APIRouter(tags=["router_dynamic2"])
 templates = Jinja2Templates(directory="templates")
 
 load_dotenv()
@@ -85,11 +85,22 @@ async def text_input(request: Request):
 @router.post("/process_text", response_class=HTMLResponse)
 async def process_text(request: Request, userText: str = Form(...), db: Session = Depends(get_db)):
     response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
-        messages=[
-            {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text(fill out in English language)."},
-            {"role": "user", "content": f"{userText}"}
-        ]
+        model=[
+        {
+            "role": "system",
+            "content": """Extract only the necessary attributes and values needed to fill out a company-specific form. 
+            Only return information related to these fields in english or deutsch:
+            - Firstname
+            - Ziel Füllgewicht (muss float sein)
+            - Pulsierendes Befüllen (muss boolean sein, entwerder Ein oder Aus)
+            - Druckart (muss entwerder Reltiv oder Absolut sein)
+            - Umgebungdsruck (muss float sein)
+
+            Ignore any irrelevant details. Do not generate additional fields beyond this list. 
+            Return the extracted information in key-value format."""
+        },
+        {"role": "user", "content": f"{userText}"}
+    ]
     )
     ai_response = response['choices'][0]['message']['content']
 
@@ -178,25 +189,41 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": "Extrahiere beliebige Attribute und Werte aus dem Text(fill out in English language)."},
-                {"role": "user", "content": f"{userText}"}
-            ]
+        {
+            "role": "system",
+            "content": """Extract only the necessary attributes and values needed to fill out a company-specific form. 
+            Only return information related to these fields in english or deutsch:
+
+            - Firstname
+            - Ziel Füllgewicht (muss numerische float sein)
+            - Pulsierendes Befüllen (option value muss nur entwerder Ein oder Aus)
+            - Druckart (option valus muss nur entwerder Reltiv oder Absolut sein)
+            - Umgebungdsruck (muss numerische float sein)
+
+            Ignore any irrelevant details. Do not generate additional fields beyond this list. 
+            Return the extracted information in key-value format."""
+        },
+        {"role": "user", "content": f"{userText}"}
+    ]
         )
 
 
         ai_response = response['choices'][0]['message']['content']
 
-        ai_response_clean = ai_response.replace('-', '').replace(' - ', '').strip()
+        ai_response_clean = ai_response.replace('-', '').replace(' - ', '').replace('"','').replace(',','').strip()
         print("Bereinigte Antwort von OpenAI:", ai_response_clean)
 
         ai_data = extract_data_from_ai_response(ai_response_clean)
         ai_data = {key.replace('-', '').strip(): value for key, value in ai_data.items()}
 
-        # Überprüfung auf das erforderliche Feld "First and Lastname"
-        required_field = "First and Lastname"
-        if "Firstname" not in ai_data or not ai_data["Firstname"].strip():
-            ai_data["Firstname"] = "Unknown"  # مقدار پیش‌فرض
+        valid_pulsierendes_befuellen = ["Ein", "Aus"]
+        valid_druckart = ["Relativ", "Absolut"]
 
+        if "Pulsierendes Befüllen" not in ai_data or ai_data["Pulsierendes Befüllen"] not in valid_pulsierendes_befuellen:
+            ai_data["Pulsierendes Befüllen"] = "Aus"  # Standardwert setzen
+
+        if "Druckart" not in ai_data or ai_data["Druckart"] not in valid_druckart:
+            ai_data["Druckart"] = "Relativ" 
 
         # Temporäre Datei löschen
         os.remove(temp_audio_file_path)

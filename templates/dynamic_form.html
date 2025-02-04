@@ -166,10 +166,10 @@
         <form action="/submit_dynamic_form" method="post">
 
             <!-- Sicherstellen, dass das Feld "Firstname" immer vorhanden ist -->
-            <label for="Firstname">First name:</label>
+           <!-- <label for="Firstname">First name:</label>
             <input type="text" id="Firstname" name="Firstname" value="{{ data.get('Firstname') or data.get('First Name') or data.get('First name') or data.get('Name', '') }}" required>
         
-            <!-- Dynamisch generierte Felder -->
+             Dynamisch generierte Felder -->
             {% for key, value in data.items() %}
                 {% set normalized_key = key.lower().replace(' ', '') %} <!-- Normalisiere den Schlüssel -->
                 {% if normalized_key not in ['Firstname', 'firstname', 'First Name','First name'] %}

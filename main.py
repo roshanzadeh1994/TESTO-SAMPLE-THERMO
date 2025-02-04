@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from db.database import Base, get_db
 from db.database import engine
-from routers import user_router, router,router_ai, router_dynamic
+from routers import user_router, router,router_ai, router_dynamic, router_dynamic2
 from auth import authentication
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -23,7 +23,9 @@ app.include_router(user_router.router)
 app.include_router(router.router)
 app.include_router(authentication.router)
 #app.include_router(router_ai.router)
-app.include_router(router_dynamic.router)
+#app.include_router(router_dynamic.router)
+app.include_router(router_dynamic2.router)
+
 
 
 Base.metadata.create_all(bind=engine)
