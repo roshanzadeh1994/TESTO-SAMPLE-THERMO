@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill Out Your Form</title>
+</head>
+<body>
+    <h1>Fill Your Form</h1>
+
+    {% if extracted_text %}
+        <h2>Extracted Form Data:</h2>
+        <p>{{ extracted_text }}</p>
+    {% endif %}
+
+    <form action="/process_voice" method="post" enctype="multipart/form-data">
+        <label for="audioFile">Upload Voice Input:</label>
+        <input type="file" id="audioFile" name="audioFile" accept=".wav" required>
+        <button type="submit">Process Voice</button>
+    </form>
+
+    <h2>Or Fill Manually:</h2>
+    <form action="/submit_form" method="post">
+        {% for key, value in data.items() %}
+            <label for="{{ key }}">{{ key }}:</label>
+            <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" required>
+        {% endfor %}
+        <button type="submit">Submit Form</button>
+    </form>
+</body>
+</html>

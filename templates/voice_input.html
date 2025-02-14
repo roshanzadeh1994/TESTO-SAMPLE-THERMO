@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spracheingabe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .record {
+            background-color: #28a745;
+            color: white;
+        }
+        .stop {
+            background-color: #dc3545;
+            color: white;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Spracheingabe</h1>
+        <p>Extrahierter Text aus dem Formular:</p>
+        <textarea readonly rows="5" cols="50">{{ extracted_text }}</textarea>
+
+        <h2>🔊 Sprechen Sie Ihre Antwort</h2>
+        <button id="recordButton" class="record">🎙️ Aufnahme starten</button>
+        <button id="stopButton" class="stop">⏹️ Aufnahme stoppen</button>
+        <audio id="audioPlayback" controls></audio>
+
+        <form id="voiceForm" action="/process_voice" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="extracted_text" value="{{ extracted_text }}">
+            <input type="file" id="audioFile" name="audioFile" style="display:none;" required>
+            <button type="submit" id="voiceSubmit" style="display:none;">📤 Absenden</button>
+        </form>
+        
+    </div>
+
+    <script>
+        let recordButton = document.getElementById('recordButton');
+        let stopButton = document.getElementById('stopButton');
+        let audioPlayback = document.getElementById('audioPlayback');
+        let audioFileInput = document.getElementById('audioFile');
+        let voiceSubmit = document.getElementById('voiceSubmit');
+        let mediaRecorder;
+        let audioChunks = [];
+
+        recordButton.addEventListener('click', async () => {
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            recordButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                let blob = new Blob(audioChunks, { type: 'audio/wav' });
+                audioChunks = [];
+                let audioURL = URL.createObjectURL(blob);
+                audioPlayback.src = audioURL;
+
+                let file = new File([blob], 'recording.wav', { type: 'audio/wav' });
+                let dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                audioFileInput.files = dataTransfer.files;
+
+                voiceSubmit.style.display = 'block';
+            };
+        });
+
+        stopButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            recordButton.style.display = 'inline-block';
+            stopButton.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

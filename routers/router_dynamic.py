@@ -192,10 +192,6 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         ai_data = extract_data_from_ai_response(ai_response_clean)
         ai_data = {key.replace('-', '').strip(): value for key, value in ai_data.items()}
 
-        # Überprüfung auf das erforderliche Feld "First and Lastname"
-        required_field = "First and Lastname"
-        if "Firstname" not in ai_data or not ai_data["Firstname"].strip():
-            ai_data["Firstname"] = "Unknown"  # مقدار پیش‌فرض
 
 
         # Temporäre Datei löschen
