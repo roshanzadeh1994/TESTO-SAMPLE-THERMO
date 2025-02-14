@@ -7,6 +7,8 @@ Mithilfe von Tesseract OCR wird der Text aus dem Dokument extrahiert.
 OpenAI analysiert den Text und filtert nur die relevanten Formularfelder heraus (keine unnötigen Texte oder Beschreibungen).
 Ergebnis: Eine Liste von relevanten Feldern.
 
+
+
 then:
 
 🎙️ Spracheingabe zur automatischen Formularbefüllung
@@ -16,8 +18,9 @@ Die Sprache wird mit OpenAI Whisper (Speech-to-Text) in Text umgewandelt.
 OpenAI GPT-4 analysiert die Antwort und füllt nur die erkannten Felder aus.
 Ergebnis: Ein dynamisches Formular, das die eingegebenen Daten verarbeitet.
 
-then :
 
+
+then :
 
 💾 Speicherung der Daten in der Datenbank
 
