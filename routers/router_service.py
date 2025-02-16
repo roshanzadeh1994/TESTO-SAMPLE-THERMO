@@ -108,13 +108,17 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), ext
         openai_response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": f"Only return information related to fields of the following extracted data: {extracted_text}. Provide the result in structured JSON format just in English or German language."},
+                {"role": "system", "content": f"Only return information related to fields of the following extracted data: {extracted_text}. Provide the result in structured JSON format just fill form in English or German language., If a field is missing or unclear, assign a **default value** like 'Unknown', 'Not provided', or 0 for numbers."},
                 {"role": "user", "content": user_text}
             ]
         )
         # OpenAI-Antwort drucken, um Fehler zu erkennen
         print("🔄 OpenAI Response (Rohformat):", openai_response, flush=True)
         response_content = openai_response['choices'][0]['message']['content'].strip()
+        
+        if response_content.startswith("```json"):
+            
+            response_content = response_content.replace("```json", "").replace("```", "").strip()
         
          # Falls die Antwort leer ist
         if not response_content:
