@@ -50,41 +50,93 @@ def extract_data_from_ai_response(response_content: str) -> dict:
 async def upload_form_page(request: Request):
     return templates.TemplateResponse("upload_form.html", {"request": request})
 
+# @router.post("/upload_form")
+# async def upload_form(request: Request, file: UploadFile = File(...)):
+#     try:
+#         file_ext = file.filename.split(".")[-1].lower()
+#         if file_ext not in ["jpg", "jpeg", "png", "pdf"]:
+#             raise HTTPException(status_code=400, detail="Invalid file format. Only JPG, PNG, and PDF are allowed.")
+        
+#         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_ext}")
+#         temp_file.write(await file.read())
+#         temp_file_path = temp_file.name
+#         temp_file.close()
+
+#         if file_ext == "pdf":
+#             images = convert_from_bytes(open(temp_file_path, "rb").read())
+#             extracted_text = "\n".join([pytesseract.image_to_string(img) for img in images])
+#         else:
+#             extracted_text = pytesseract.image_to_string(Image.open(temp_file_path))
+        
+#         os.remove(temp_file_path)
+        
+#         # OpenAI GPT-4 zur Extraktion der Formularfelder nutzen
+#         openai_response = openai.ChatCompletion.create(
+#             model="gpt-4-turbo",
+#             messages=[
+#                 {"role": "system", "content": "Extract only the field names from the document, without any additional information, descriptions, or values. Return only a list of field names in JSON format."},
+#                 {"role": "user", "content": extracted_text}
+#             ]
+#         )
+
+#         form_fields = json.loads(openai_response['choices'][0]['message']['content'])
+        
+#         return templates.TemplateResponse("voice_input.html", {"request": request, "extracted_text": form_fields})
+    
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+    
+    
+
 @router.post("/upload_form")
 async def upload_form(request: Request, file: UploadFile = File(...)):
     try:
+        print("📂 Datei-Upload gestartet:", file.filename, flush=True)
+
         file_ext = file.filename.split(".")[-1].lower()
+        print("🔍 Dateierweiterung erkannt:", file_ext, flush=True)
+
         if file_ext not in ["jpg", "jpeg", "png", "pdf"]:
             raise HTTPException(status_code=400, detail="Invalid file format. Only JPG, PNG, and PDF are allowed.")
-        
+
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_ext}")
         temp_file.write(await file.read())
         temp_file_path = temp_file.name
         temp_file.close()
+        print("✅ Datei erfolgreich gespeichert:", temp_file_path, flush=True)
 
         if file_ext == "pdf":
+            print("📄 PDF erkannt – Konvertiere zu Bild...", flush=True)
             images = convert_from_bytes(open(temp_file_path, "rb").read())
+
+            print("🖼 OCR (Texterkennung) auf PDF-Bildern läuft...", flush=True)
             extracted_text = "\n".join([pytesseract.image_to_string(img) for img in images])
         else:
+            print("🖼 OCR (Texterkennung) auf Bild läuft...", flush=True)
             extracted_text = pytesseract.image_to_string(Image.open(temp_file_path))
-        
+
         os.remove(temp_file_path)
-        
-        # OpenAI GPT-4 zur Extraktion der Formularfelder nutzen
+        print("🗑 Temporäre Datei gelöscht", flush=True)
+
+        # OpenAI zur Extraktion der Formularfelder nutzen
+        print("🔄 Anfrage an OpenAI zur Extraktion der Formfelder...", flush=True)
         openai_response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": "Extract only the field names from the document, without any additional information, descriptions, or values. Return only a list of field names in JSON format."},
+                {"role": "system", "content": "Extract only the field names from the document, without any additional information, descriptions, or values. Return only a list of field names in JSON format ."},
                 {"role": "user", "content": extracted_text}
             ]
         )
 
         form_fields = json.loads(openai_response['choices'][0]['message']['content'])
-        
+        print("✅ OpenAI Antwort empfangen:", form_fields, flush=True)
+
         return templates.TemplateResponse("voice_input.html", {"request": request, "extracted_text": form_fields})
     
     except Exception as e:
+        print("❌ Fehler in `upload_form`:", str(e), flush=True)
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
 
 @router.post("/process_voice")
 async def process_voice(request: Request, audioFile: UploadFile = File(...), extracted_text: str = Form(...)):
@@ -96,7 +148,8 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), ext
         with open(temp_audio_file_path, "rb") as audio_file:
             response = openai.Audio.transcribe(
                 model="whisper-1",
-                file=audio_file
+                file=audio_file,
+                language="de"
             )
 
         
@@ -108,7 +161,7 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), ext
         openai_response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": f"Only return information related to fields of the following extracted data: {extracted_text}. Provide the result in structured JSON format just fill form in English or German language., If a field is missing or unclear, assign a **default value** like 'Unknown', 'Not provided', or 0 for numbers."},
+                {"role": "system", "content": f"Only return information related to fields of the following extracted data(only in English or German): {extracted_text}. Provide the result in structured JSON format just fill form only in English or German language., If a field is missing or unclear, assign a **default value** like 'Unknown', 'Not provided', or 0 for numbers."},
                 {"role": "user", "content": user_text}
             ]
         )

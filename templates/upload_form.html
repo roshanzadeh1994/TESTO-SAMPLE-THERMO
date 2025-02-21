@@ -3,14 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Form</title>
+    <title>Upload Your Form</title>
+    <style>
+        /* Basis-Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #0072ff;
+            background: #f9f9f9;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="file"]:hover {
+            background: #e0f0ff;
+            border-color: #00c6ff;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Mobile Optimierung */
+        @media (max-width: 480px) {
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload Your Form (PDF or Image)</h1>
-    <form action="/upload_form" method="post" enctype="multipart/form-data">
-        <label for="file">Choose a file:</label>
-        <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
-        <button type="submit">Upload</button>
-    </form>
+
+    <div class="container">
+        <h1>Upload Your Form</h1>
+        <form action="/upload_form" method="post" enctype="multipart/form-data">
+            <label for="file">Choose a file:</label>
+            <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
 </body>
 </html>

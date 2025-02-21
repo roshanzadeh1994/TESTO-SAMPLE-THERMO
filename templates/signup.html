@@ -5,39 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📝 Sign Up</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: -0;
+        * {
+            margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
             background-image: url('http://127.0.0.1:8000/static/4444.png');
-           /* background: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg') no-repeat center center fixed;*/
             background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 89vh;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding-top: 100px;
         }
 
         .navbar {
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
             position: fixed;
             top: 0;
             left: 0;
@@ -47,21 +40,33 @@
 
         .navbar a {
             color: white;
-            padding: 14px 20px;
+            padding: 12px 18px;
             text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s;
-            margin-right: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-right: 15px;
         }
 
         .navbar a:hover {
-            background-color: #ddd;
+            background-color: #ffcc00;
             color: black;
+            transform: scale(1.05);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            margin-top: 30px;
         }
 
         h2 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -73,119 +78,106 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="password"],
-        input[type="submit"],
-        .home-button {
+        input[type="password"] {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
+            margin-bottom: 15px;
             border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
         }
 
-        input[type="submit"]:hover {
-            background-color: #0056b3;
+        .signup-button {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .signup-button:hover {
+            background: linear-gradient(90deg, #0056b3, #007bff);
             transform: scale(1.05);
         }
 
         .home-button {
-            background-color: #FF7043;
-            color: #fff;
+            background: linear-gradient(90deg, #FF7043, #FF5722);
+            color: white;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            cursor: pointer;
         }
 
         .home-button:hover {
-            background-color: #FF5722;
             transform: scale(1.05);
         }
 
-
-        .home2-button {
-            background-color: #070302;
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .home2-button:hover {
-            background-color: #070302;
-            transform: scale(1.05);
-        }
-
-        
         /* Responsive Design */
         @media only screen and (max-width: 600px) {
             .container {
                 padding: 20px;
             }
+
             h2 {
-                font-size: 24px;
-            }
-            input[type="submit"], .home-button {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
-        @media only screen and (min-width: 601px) and (max-width: 1024px) {
-            .container {
-                max-width: 80%;
-            }
-            h2 {
-                font-size: 28px;
+                font-size: 22px;
             }
         }
     </style>
 </head>
 <body>
-<div class="navbar">
-    <a href="/">Home</a>
-    <a href="/about">About</a>
-</div>
-<div class="container">
-    <h2>📝 Sign Up</h2>
-    <form id="signupForm" action="/signup/submit" method="post" onsubmit="return validatePassword()">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <input type="submit" value="🔐 Sign Up">
-    </form>
-    <a href="/" class="home-button">🏠 Home</a>
-</div>
 
-<script>
-    function validatePassword() {
-        const password = document.getElementById('password').value;
+    <div class="navbar">
+        <a href="/">🏠 Home</a>
+        <a href="/about">ℹ About</a>
+    </div>
 
-        if (password.length < 8) {
-            alert('Password must be at least 8 characters long.');
-            return false;
+    <div class="container">
+        <h2>📝 Sign Up</h2>
+        <form id="signupForm" action="/signup/submit" method="post" onsubmit="return validatePassword()">
+            <label for="username">👤 Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="email">📧 Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">🔑 Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="button signup-button">🚀 Sign Up</button>
+        </form>
+        
+        <a href="/" class="button home-button">🏠 Home</a>
+    </div>
+
+    <script>
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+
+            if (password.length < 8) {
+                alert('⚠️ Password must be at least 8 characters long.');
+                return false;
+            }
+
+            return true;
         }
+    </script>
 
-        return true;
-    }
-</script>
 </body>
 </html>
