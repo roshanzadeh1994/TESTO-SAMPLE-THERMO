@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form & Voice Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        #status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload & Process Form</h2>
+        <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf">
+        <button id="upload">Upload & Process</button>
+        <p id="status"></p>
+        <h3>Extracted Fields:</h3>
+        <table id="extractedFieldsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Field Name</th>
+                </tr>
+            </thead>
+            <tbody id="extractedFieldsBody"></tbody>
+        </table>
+        <h2>Record & Process Voice</h2>
+        <button id="record">Start Recording</button>
+        <button id="stop" disabled>Stop Recording</button>
+        <table id="responseTable" style="display: none;">
+            <thead>
+                <tr><th>Field</th><th>Value</th></tr>
+            </thead>
+            <tbody id="responseBody"></tbody>
+        </table>
+    </div>
+    <script>
+        let extractedFields = "";
+        let mediaRecorder;
+        let audioChunks = [];
+        
+        document.getElementById("upload").onclick = async () => {
+            let fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a file.");
+                return;
+            }
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            document.getElementById("status").innerText = "Processing...";
+            let response = await fetch("http://127.0.0.1:8000/process_form", { method: "POST", body: formData });
+            let data = await response.json();
+            extractedFields = JSON.parse(data.extracted_fields);
+            let table = document.getElementById("extractedFieldsTable");
+            let tableBody = document.getElementById("extractedFieldsBody");
+            tableBody.innerHTML = "";
+            Object.keys(extractedFields).forEach(field => {
+                let row = document.createElement("tr");
+                let fieldCell = document.createElement("td");
+                fieldCell.innerText = field;
+                row.appendChild(fieldCell);
+                tableBody.appendChild(row);
+            });
+            table.style.display = "table";
+            document.getElementById("status").innerText = "Form Processed!";
+        };
+        
+        document.getElementById("record").onclick = async () => {
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            document.getElementById("status").innerText = "Recording...";
+            mediaRecorder.ondataavailable = event => { audioChunks.push(event.data); };
+            document.getElementById("stop").disabled = false;
+            document.getElementById("record").disabled = true;
+        };
+        
+        document.getElementById("stop").onclick = async () => {
+            mediaRecorder.stop();
+            document.getElementById("status").innerText = "Processing...";
+            mediaRecorder.onstop = async () => {
+                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                let reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async function () {
+                    let base64String = reader.result.split(",")[1];
+        
+                    // بررسی مقدار extractedFields
+                    console.log("Extracted Fields before sending:", extractedFields);
+                    
+                    let response = await fetch("http://127.0.0.1:8000/process_voice", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            audio_base64: base64String,
+                            extracted_fields: JSON.stringify(extractedFields) // اصلاح این بخش
+                        })
+                    });
+        
+                    let data = await response.json();
+                    document.getElementById("status").innerText = "Voice Processed!";
+                    let responseTable = document.getElementById("responseTable");
+                    let responseBody = document.getElementById("responseBody");
+                    responseBody.innerHTML = "";
+                    responseTable.style.display = "table";
+                    let fieldsObject = JSON.parse(data.filled_form);
+                    
+                    Object.entries(fieldsObject).forEach(([key, value]) => {
+                        let row = document.createElement("tr");
+                        let fieldCell = document.createElement("td");
+                        let valueCell = document.createElement("td");
+                        
+                        fieldCell.innerText = key;
+                        valueCell.innerHTML = value !== null ? value : "Not Provided";  //  ⬅️ Bejaye innerText, az innerHTML estefade shode
+                        
+                        row.appendChild(fieldCell);
+                        row.appendChild(valueCell);
+                        responseBody.appendChild(row);
+                    });
+                };
+            };
+        };
+        
+        
+    </script>
+</body>
+</html>

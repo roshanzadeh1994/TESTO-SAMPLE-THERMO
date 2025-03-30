@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Form & Process</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        #status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #eee;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Upload Form & Process</h2>
+
+        <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf">
+        <button id="upload">Upload & Process</button>
+
+        <p id="status"></p>
+
+        <table id="responseTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="responseBody"></tbody>
+        </table>
+
+        <button id="goToVoice" style="display:none; background-color: #007BFF;">Go to Process Voice</button>
+    </div>
+
+    <script>
+        let extractedFields = "";
+
+        document.getElementById("upload").onclick = async () => {
+            let fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a file.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            document.getElementById("status").innerText = "Processing...";
+
+            let response = await fetch("http://127.0.0.1:8000/process_form", {
+                method: "POST",
+                body: formData
+            });
+
+            let data = await response.json();
+            extractedFields = data.extracted_fields;
+
+            document.getElementById("status").innerText = "Done!";
+            
+            let responseTable = document.getElementById("responseTable");
+            let responseBody = document.getElementById("responseBody");
+
+            responseBody.innerHTML = ""; // پاک کردن اطلاعات قبلی
+
+            try {
+                let fieldsObject = JSON.parse(extractedFields);
+                responseTable.style.display = "table"; // نمایش جدول
+
+                Object.keys(fieldsObject).forEach(key => {
+                    let row = document.createElement("tr");
+                    let fieldCell = document.createElement("td");
+                    let valueCell = document.createElement("td");
+
+                    fieldCell.innerText = key;
+
+                    let value = fieldsObject[key];
+                    if (typeof value === "object") {
+                        valueCell.innerText = JSON.stringify(value, null, 2);
+                    } else {
+                        valueCell.innerText = value;
+                    }
+
+                    row.appendChild(fieldCell);
+                    row.appendChild(valueCell);
+                    responseBody.appendChild(row);
+                });
+            } catch (error) {
+                responseTable.style.display = "none";
+                document.getElementById("status").innerText = "Error processing data";
+            }
+
+            document.getElementById("goToVoice").style.display = "block";
+        };
+
+        document.getElementById("goToVoice").onclick = () => {
+            window.location.href = `/process_voice?fields=${encodeURIComponent(JSON.stringify(extractedFields))}`;
+        };
+    </script>
+
+</body>
+</html>

@@ -22,10 +22,10 @@ app.mount("/static", StaticFiles(directory="templates"), name="static")
 app.include_router(user_router.router)
 app.include_router(router.router)
 app.include_router(authentication.router)
-#app.include_router(router_ai.router)
+app.include_router(router_ai.router)
 #app.include_router(router_dynamic.router)
 #app.include_router(router_dynamic2.router)
-app.include_router(router_service.router)
+#app.include_router(router_service.router)
 
 
 
