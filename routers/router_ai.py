@@ -50,6 +50,9 @@ async def process_form(file: UploadFile = File(...)):
         )
 
         form_fields = openai_response['choices'][0]['message']['content']
+        print("Extracted text:", extracted_text[:500])  # فقط ۵۰۰ کاراکتر اول
+        print("OpenAI response:", form_fields)
+
         return JSONResponse(content={"extracted_fields": form_fields})
 
     except Exception as e:
@@ -119,3 +122,11 @@ async def get_record_voice():
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
+@router.post("/all", response_class=HTMLResponse)
+async def get_record_voice():
+    """Serve record.html"""
+    file_path = os.path.join(BASE_DIR, "..", "templates", "all.html")
+
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        return file.read()

@@ -22,19 +22,15 @@ router = APIRouter(tags=["router"])
 templates = Jinja2Templates(directory="templates")
 
 
+@router.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 @router.post("/login", response_class=RedirectResponse)
 async def login(request: Request, db: Session = Depends(get_db)):
     """
     Verarbeitet den Benutzer-Login, prüft die Anmeldedaten und erstellt ein JWT-Token. Bei Erfolg wird der Benutzer weitergeleitet und die Anmeldedaten in Cookies gespeichert.
-
-    Ablauf:
-    1. Überprüfung des Benutzernamens und Passworts.
-    2. Bei Erfolg: Erstellen eines JWT-Tokens, Speichern der Daten in Cookies und Weiterleitung.
-    3. Bei Fehler: Anzeige der Login-Seite mit Fehlermeldung.
-
-    Rückgabewert:
-    - RedirectResponse bei erfolgreichem Login.
-    - HTMLResponse bei fehlerhafter Anmeldung.
     """
     form_data = await request.form()
     username = form_data.get('username')
@@ -42,34 +38,31 @@ async def login(request: Request, db: Session = Depends(get_db)):
 
     user = db.query(models.DbUser).filter(models.DbUser.username == username).first()
     if not user or not Hash.verify(user.password, password):
-        # Render the login page with an error message
         return templates.TemplateResponse("invalidUserPassword.html",
                                           {"request": request, "error": "Invalid username or password"})
 
     access_token = oauth2.create_access_token(data={"sub": username})
 
-    # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
     expires = datetime.utcnow() + timedelta(seconds=90000)
-    expires_utc = expires.replace(tzinfo=timezone.utc)  # Setze die Zeitzone auf UTC
+    expires_utc = expires.replace(tzinfo=timezone.utc)
 
-    # Save user information in cookie with expiration time
-    response = RedirectResponse(url="/login/formular")
+    response = RedirectResponse(url="/all")
     response.set_cookie(key="user_id", value=str(user.id), expires=expires_utc)
     response.set_cookie(key="username", value=username, expires=expires_utc)
     return response
 
 
-@router.get("/login/formular", response_class=HTMLResponse)
+@router.get("/all", response_class=HTMLResponse)
 async def index(request: Request, user_id: Optional[str] = Cookie(None), username: Optional[str] = Cookie(None)):
     # Retrieve user information from cookies
     if not user_id or not username:
         # Handle case when user information is not available
         return RedirectResponse(url="/login")
     # Use user information in your HTML template
-    return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
+    return templates.TemplateResponse("all.html", {"request": request, "user_id": user_id, "username": username})
 
 
-@router.post("/login/formular", response_class=HTMLResponse)
+@router.post("/all", response_class=HTMLResponse)
 async def process_login_form(request: Request, user_id: Optional[str] = Cookie(None),
                              username: Optional[str] = Cookie(None)):
     """
@@ -83,69 +76,9 @@ async def process_login_form(request: Request, user_id: Optional[str] = Cookie(N
     Rückgabewert:
     - HTMLResponse: Rendert die "index.html"-Seite mit Benutzerinformationen.
     """
-    return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
+    return templates.TemplateResponse("all.html", {"request": request, "user_id": user_id, "username": username})
 
 
-@router.post("/login/formular/submit/", response_class=HTMLResponse)
-async def submit_device_inspection(request: Request, db: Session = Depends(get_db),
-                                 user_id: Optional[str] = Cookie(None)):
-    """
-        Verarbeitet das Inspektionsformular, erstellt einen neuen Eintrag und zeigt alle Inspektionen des Benutzers an.
-
-        Parameter:
-        - request (Request): Die HTTP-Anfrage mit Formulardaten.
-        - db (Session): Datenbank-Sitzung für die Inspektionserstellung.
-        - user_id (str): Benutzer-ID aus dem Cookie.
-
-        Ablauf:
-        1. Überprüft die Authentifizierung.
-        2. Extrahiert die Formulardaten und erstellt einen neuen Inspektionseintrag.
-        3. Zeigt alle Inspektionen des Benutzers an.
-
-        Rückgabewert:
-        - HTMLResponse: Zeigt die Seite mit allen Inspektionen.
-        """
-    if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
-
-    form_data = await request.form()
-    inspection_location = form_data.get("inspection_location")
-    device_name = form_data.get("device_name")
-    inspection_date = form_data.get("inspection_date")
-    inspection_details = form_data.get("inspection_details")
-    kältepump = int(form_data.get("kältepump"))
-
-    # Convert date string to datetime object
-    if inspection_date:
-        inspection_date = datetime.strptime(inspection_date, "%Y-%m-%d").date()
-
-    device_inspection = schemas.DeviceInspectionInput(
-        inspection_location=inspection_location,
-        device_name=device_name,
-        inspection_date=inspection_date,
-        inspection_details=inspection_details,
-        kältepump=kältepump,
-        user_id=int(user_id),  # Convert user_id to int
-    )
-
-    # Inspektion erstellen
-    create_device_inspection(db, device_inspection.dict())
-
-    # Alle Inspektionsinformationen abrufen
-    all_inspections = db.query(DeviceInspection).filter_by(user_id=int(user_id)).all()
-
-    # Vorlage für die Erfolgsseite mit allen Inspektionsinformationen und Download-Button rendern
-    return templates.TemplateResponse("show_all_inspections.html", {"request": request, "inspections": all_inspections})
-
-
-@router.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-@router.post("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @router.get("/signup/", response_class=HTMLResponse)
@@ -186,51 +119,3 @@ async def homepage(request: Request, user_id: Optional[str] = Cookie(None), user
     return templates.TemplateResponse("profile.html", {"request": request, "user_id": user_id, "username": username})
 
 
-@router.get("/download/")
-async def download_device_inspections(db: Session = Depends(get_db)):
-    try:
-        inspections = db.query(DeviceInspection).all()
-
-        if not inspections:
-            raise HTTPException(status_code=404, detail="No device inspections found")
-
-        inspection_data = {
-            "Inspection Location": [inspection.inspection_location for inspection in inspections],
-            "device Name": [inspection.device_name for inspection in inspections],
-            "Inspection Date": [inspection.inspection_date for inspection in inspections],
-            "Inspection Details": [inspection.inspection_details for inspection in inspections],
-            "Kältepump": [inspection.kältepump for inspection in inspections],
-            "User_id": [inspection.user_id for inspection in inspections]
-
-        }
-
-        df = pd.DataFrame(inspection_data)
-
-        # Erstelle eine temporäre Datei
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
-            filename = tmp_file.name
-
-            # Schreibe den DataFrame in die temporäre Datei
-            df.to_excel(tmp_file, index=False)
-
-        # Gebe die temporäre Datei zurück
-        return FileResponse(filename, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-#
-@router.get("/dynamic_form_fields")
-async def get_dynamic_form_fields():
-    """
-    Gibt dynamisch die Felder für das Formular zurück.
-    """
-    # Beispielhafte Logik: Die Felder könnten aus einer Datenbank oder Konfiguration kommen.
-    fields = [
-        {"name": "inspection_location", "type": "text", "required": True},
-        {"name": "device_name", "type": "text", "required": True},
-        {"name": "inspection_date", "type": "date", "required": True},
-        {"name": "inspection_details", "type": "textarea", "required": False},
-        {"name": "kältepump", "type": "number", "required": True},
-    ]
-    return {"fields": fields}
