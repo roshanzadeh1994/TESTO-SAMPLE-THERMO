@@ -1,214 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form & Voice Processing</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-image: url('http://127.0.0.1:8000/static/8888.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form & Voice Processing</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-image: url('http://127.0.0.1:8000/static/8888.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
 
-        .overlay {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 40px 20px;
-            min-height: 100vh;
-        }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
 
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-width: 700px;
-            margin: 40px auto;
-            backdrop-filter: blur(4px);
-        }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 700px;
+      margin: 40px auto;
+      backdrop-filter: blur(4px);
+    }
 
-        h2, h3 {
-            color: #333;
-            margin-bottom: 20px;
-        }
+    h2, h3 {
+      color: #333;
+      margin-bottom: 20px;
+    }
 
-        input[type="file"] {
-            margin-bottom: 15px;
-        }
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
 
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 10px 5px;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px 5px;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    button:hover {
+      background-color: #0056b3;
+    }
 
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
 
-        #status {
-            font-weight: bold;
-            margin-top: 15px;
-            color: #555;
-        }
+    #status {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #555;
+    }
 
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+    table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
 
-        th {
-            background-color: #007BFF;
-            color: white;
-        }
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
 
-            button {
-                width: 100%;
-            }
-        }
-    </style>
+      button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="overlay">
-        <div class="container">
-            <h2>Upload & Process Form</h2>
-            <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf">
-            <button id="upload">Upload & Process</button>
-            <p id="status"></p>
+  <div class="overlay">
+    <div class="container">
+      <h2>Upload & Process Form</h2>
+      <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .pdf">
+      <button id="upload">Upload & Process</button>
+      <p id="status"></p>
 
-            <h3>Extracted Fields:</h3>
-            <table id="extractedFieldsTable" style="display: none;">
-                <thead>
-                    <tr><th>Field Name</th></tr>
-                </thead>
-                <tbody id="extractedFieldsBody"></tbody>
-            </table>
+      <h3>Extracted Fields:</h3>
+      <table id="extractedFieldsTable" style="display: none;">
+        <thead><tr><th>Field Name</th></tr></thead>
+        <tbody id="extractedFieldsBody"></tbody>
+      </table>
 
-            <h2>Record & Process Voice</h2>
-            <button id="record">Start Recording</button>
-            <button id="stop" disabled>Stop Recording</button>
+      <h2>Record & Process Voice</h2>
+      <button id="record">Start Recording</button>
+      <button id="stop" disabled>Stop Recording</button>
 
-            <table id="responseTable" style="display: none;">
-                <thead>
-                    <tr><th>Field</th><th>Value</th></tr>
-                </thead>
-                <tbody id="responseBody"></tbody>
-            </table>
-        </div>
+      <table id="responseTable" style="display: none;">
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody id="responseBody"></tbody>
+      </table>
+
+      <!-- 🔹 دکمه ذخیره‌سازی -->
+      <button id="saveToDB" style="display: none;">Save to Database</button>
+      <p id="saveMessage" style="display: none; font-weight: bold; margin-top: 15px;"></p>
     </div>
+  </div>
 
-    <!-- JS code remains unchanged -->
-    <script>
-        let extractedFields = "";
-        let mediaRecorder;
-        let audioChunks = [];
+  <script>
+    let extractedFields = "";
+    let mediaRecorder;
+    let audioChunks = [];
 
-        document.getElementById("upload").onclick = async () => {
-            let fileInput = document.getElementById("fileInput");
-            if (!fileInput.files.length) {
-                alert("Please select a file.");
-                return;
-            }
-            let formData = new FormData();
-            formData.append("file", fileInput.files[0]);
-            document.getElementById("status").innerText = "Processing...";
-            let response = await fetch("http://127.0.0.1:8000/process_form", { method: "POST", body: formData });
-            let data = await response.json();
-            extractedFields = JSON.parse(data.extracted_fields);
-            let table = document.getElementById("extractedFieldsTable");
-            let tableBody = document.getElementById("extractedFieldsBody");
-            tableBody.innerHTML = "";
-            Object.keys(extractedFields).forEach(field => {
-                let row = document.createElement("tr");
-                let fieldCell = document.createElement("td");
-                fieldCell.innerText = field;
-                row.appendChild(fieldCell);
-                tableBody.appendChild(row);
-            });
-            table.style.display = "table";
-            document.getElementById("status").innerText = "Form Processed!";
+    document.getElementById("upload").onclick = async () => {
+      let fileInput = document.getElementById("fileInput");
+      if (!fileInput.files.length) {
+        alert("Please select a file.");
+        return;
+      }
+      let formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      document.getElementById("status").innerText = "Processing...";
+      let response = await fetch("http://127.0.0.1:8000/process_form", { method: "POST", body: formData });
+      let data = await response.json();
+      extractedFields = JSON.parse(data.extracted_fields);
+      let table = document.getElementById("extractedFieldsTable");
+      let tableBody = document.getElementById("extractedFieldsBody");
+      tableBody.innerHTML = "";
+      Object.keys(extractedFields).forEach(field => {
+        let row = document.createElement("tr");
+        let fieldCell = document.createElement("td");
+        fieldCell.innerText = field;
+        row.appendChild(fieldCell);
+        tableBody.appendChild(row);
+      });
+      table.style.display = "table";
+      document.getElementById("status").innerText = "Form Processed!";
+    };
+
+    document.getElementById("record").onclick = async () => {
+      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.start();
+      document.getElementById("status").innerText = "Recording...";
+      mediaRecorder.ondataavailable = event => { audioChunks.push(event.data); };
+      document.getElementById("stop").disabled = false;
+      document.getElementById("record").disabled = true;
+    };
+
+    document.getElementById("stop").onclick = async () => {
+      mediaRecorder.stop();
+      document.getElementById("status").innerText = "Processing...";
+      mediaRecorder.onstop = async () => {
+        let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        let reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async function () {
+          let base64String = reader.result.split(",")[1];
+
+          let response = await fetch("http://127.0.0.1:8000/process_voice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              audio_base64: base64String,
+              extracted_fields: JSON.stringify(extractedFields)
+            })
+          });
+
+          let data = await response.json();
+          document.getElementById("status").innerText = "Voice Processed!";
+          let responseTable = document.getElementById("responseTable");
+          let responseBody = document.getElementById("responseBody");
+          responseBody.innerHTML = "";
+          responseTable.style.display = "table";
+          let fieldsObject = JSON.parse(data.filled_form);
+
+          Object.entries(fieldsObject).forEach(([key, value]) => {
+            let row = document.createElement("tr");
+            let fieldCell = document.createElement("td");
+            let valueCell = document.createElement("td");
+            fieldCell.innerText = key;
+            valueCell.innerHTML = value !== null ? value : "Not Provided";
+            row.appendChild(fieldCell);
+            row.appendChild(valueCell);
+            responseBody.appendChild(row);
+          });
+
+          // 👇 فعال کردن دکمه ذخیره بعد از پردازش
+          document.getElementById("saveToDB").style.display = "inline-block";
         };
+      };
+    };
 
-        document.getElementById("record").onclick = async () => {
-            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
-            document.getElementById("status").innerText = "Recording...";
-            mediaRecorder.ondataavailable = event => { audioChunks.push(event.data); };
-            document.getElementById("stop").disabled = false;
-            document.getElementById("record").disabled = true;
-        };
+    // 👇 ذخیره‌سازی در دیتابیس
+    document.getElementById("saveToDB").onclick = async () => {
+      if (!extractedFields) {
+        alert("No data to save.");
+        return;
+      }
 
-        document.getElementById("stop").onclick = async () => {
-            mediaRecorder.stop();
-            document.getElementById("status").innerText = "Processing...";
-            mediaRecorder.onstop = async () => {
-                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-                let reader = new FileReader();
-                reader.readAsDataURL(audioBlob);
-                reader.onloadend = async function () {
-                    let base64String = reader.result.split(",")[1];
+      let filledFormTable = document.getElementById("responseBody");
+      let filledFormJson = {};
+      for (let row of filledFormTable.rows) {
+        let field = row.cells[0].innerText;
+        let value = row.cells[1].innerText;
+        filledFormJson[field] = value;
+      }
 
-                    let response = await fetch("http://127.0.0.1:8000/process_voice", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            audio_base64: base64String,
-                            extracted_fields: JSON.stringify(extractedFields)
-                        })
-                    });
+      const userId = getCookie("user_id");
+      if (!userId) {
+        alert("User ID not found in cookies.");
+        return;
+      }
 
-                    let data = await response.json();
-                    document.getElementById("status").innerText = "Voice Processed!";
-                    let responseTable = document.getElementById("responseTable");
-                    let responseBody = document.getElementById("responseBody");
-                    responseBody.innerHTML = "";
-                    responseTable.style.display = "table";
-                    let fieldsObject = JSON.parse(data.filled_form);
+      const payload = {
+        data: filledFormJson,
+        user_id: parseInt(userId)
+      };
 
-                    Object.entries(fieldsObject).forEach(([key, value]) => {
-                        let row = document.createElement("tr");
-                        let fieldCell = document.createElement("td");
-                        let valueCell = document.createElement("td");
+      let response = await fetch("http://127.0.0.1:8000/api/save_inspection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-                        fieldCell.innerText = key;
-                        valueCell.innerHTML = value !== null ? value : "Not Provided";
+      let result = await response.json();
+      let saveMessage = document.getElementById("saveMessage");
+      if (response.ok && result.id) {
+        saveMessage.innerText = "✅ Data saved successfully!";
+        saveMessage.style.color = "green";
+      } else {
+        saveMessage.innerText = "❌ Failed to save data!";
+        saveMessage.style.color = "red";
+      }
+      saveMessage.style.display = "block";
+    };
 
-                        row.appendChild(fieldCell);
-                        row.appendChild(valueCell);
-                        responseBody.appendChild(row);
-                    });
-                };
-            };
-        };
-    </script>
+    function getCookie(name) {
+      let value = `; ${document.cookie}`;
+      let parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+  </script>
 </body>
 </html>

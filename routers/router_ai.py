@@ -9,6 +9,9 @@ import os
 import tempfile
 import base64
 from dotenv import load_dotenv
+from db.database import get_db
+from sqlalchemy.orm import Session
+from db.db_device import create_device_inspection
 
 app = FastAPI()
 
@@ -130,3 +133,17 @@ async def get_record_voice():
 
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
+    
+
+
+@router.post("/api/save_inspection")
+async def save_inspection(data: dict = Body(...), user_id: int = Body(...), db: Session = Depends(get_db)):
+    try:
+        inspection_data = {
+            "data": data,
+            "user_id": user_id
+        }
+        inspection = create_device_inspection(db, inspection_data)
+        return {"message": "Inspection saved", "id": inspection.id}
+    except Exception as e:
+        return {"error": str(e)}
