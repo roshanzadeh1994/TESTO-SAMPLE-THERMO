@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Form & Voice Processing</title>
   <style>
+    /* Basic page styling */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
@@ -16,6 +17,7 @@
       background-attachment: fixed;
     }
 
+    /* Overlay and container styles */
     .overlay {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 40px 20px;
@@ -32,6 +34,7 @@
       backdrop-filter: blur(4px);
     }
 
+    /* Heading and button styling */
     h2, h3 {
       color: #333;
       margin-bottom: 20px;
@@ -61,6 +64,7 @@
       cursor: not-allowed;
     }
 
+    /* Status and table styling */
     #status {
       font-weight: bold;
       margin-top: 15px;
@@ -85,6 +89,7 @@
       color: white;
     }
 
+    /* Responsive adjustments */
     @media (max-width: 600px) {
       .container {
         padding: 20px;
@@ -97,6 +102,7 @@
   </style>
 </head>
 <body>
+  <!-- Main content container -->
   <div class="overlay">
     <div class="container">
       <h2>Upload & Process Form</h2>
@@ -119,17 +125,19 @@
         <tbody id="responseBody"></tbody>
       </table>
 
-      <!-- 🔹 دکمه ذخیره‌سازی -->
+      <!-- Save to database button -->
       <button id="saveToDB" style="display: none;">Save to Database</button>
       <p id="saveMessage" style="display: none; font-weight: bold; margin-top: 15px;"></p>
     </div>
   </div>
 
   <script>
+    // Global variables
     let extractedFields = "";
     let mediaRecorder;
     let audioChunks = [];
 
+    // Upload form and process OCR extraction
     document.getElementById("upload").onclick = async () => {
       let fileInput = document.getElementById("fileInput");
       if (!fileInput.files.length) {
@@ -156,6 +164,7 @@
       document.getElementById("status").innerText = "Form Processed!";
     };
 
+    // Start audio recording
     document.getElementById("record").onclick = async () => {
       let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
@@ -166,6 +175,7 @@
       document.getElementById("record").disabled = true;
     };
 
+    // Stop recording and process audio
     document.getElementById("stop").onclick = async () => {
       mediaRecorder.stop();
       document.getElementById("status").innerText = "Processing...";
@@ -204,13 +214,12 @@
             responseBody.appendChild(row);
           });
 
-          // 👇 فعال کردن دکمه ذخیره بعد از پردازش
           document.getElementById("saveToDB").style.display = "inline-block";
         };
       };
     };
 
-    // 👇 ذخیره‌سازی در دیتابیس
+    // Save extracted data to database
     document.getElementById("saveToDB").onclick = async () => {
       if (!extractedFields) {
         alert("No data to save.");
@@ -254,6 +263,7 @@
       saveMessage.style.display = "block";
     };
 
+    // Utility function to get cookie by name
     function getCookie(name) {
       let value = `; ${document.cookie}`;
       let parts = value.split(`; ${name}=`);
