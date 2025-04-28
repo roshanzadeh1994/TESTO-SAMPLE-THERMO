@@ -12,7 +12,7 @@ class DeviceInspectionInput(BaseModel):
     user_id: int
 
 
-class DeviceInspectionCreate(DeviceInspectionInput):
+class DeviceInspectionCreate(DeviceInspectionInput): 
     pass
 
 
