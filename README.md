@@ -103,8 +103,7 @@ bash
 Kopieren
 Bearbeiten
 # Repository klonen
-git clone https://github.com/roshanzadeh1994/MasterArbeit_1.git
-cd MasterArbeit_1
+git clone https://github.com/roshanzadeh1994/TESTO-SAMPLE-THERMO.git
 
 # Abhängigkeiten installieren
 pip install -r requirements.txt
