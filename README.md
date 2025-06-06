@@ -5,9 +5,9 @@
 Dieses Projekt demonstriert ein Voice User Interface (VUI), das Sprachaufnahmen nutzt, um Formulare automatisch auszufüllen.
 Basierend auf FastAPI, OpenAI GPT-4 Turbo, Whisper, Tesseract OCR und SQLite.
 
-#  Entwickelt von: Amirhossein Roshanzadeh
-#  Studiengang: Informatik, Softwareentwicklung (Master)
-#  Praxispartner: Testo GmbH
+  Entwickelt von: Amirhossein Roshanzadeh
+  Studiengang: Informatik, Softwareentwicklung (Master)
+  Praxispartner: Testo GmbH
 
 # 📚 Inhaltsverzeichnis
 Projektübersicht
