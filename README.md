@@ -1,13 +1,13 @@
 
-# 🚀 Voice User Interface (VUI) – Sprachgesteuerte Formularbearbeitung
-# 📚 Studierendenprojekt für Testo GmbH
-# 📄 Projektübersicht
+#  Voice User Interface (VUI) – Sprachgesteuerte Formularbearbeitung
+#  Studierendenprojekt für Testo GmbH
+#  Projektübersicht
 Dieses Projekt demonstriert ein Voice User Interface (VUI), das Sprachaufnahmen nutzt, um Formulare automatisch auszufüllen.
 Basierend auf FastAPI, OpenAI GPT-4 Turbo, Whisper, Tesseract OCR und SQLite.
 
-# 🔥 Entwickelt von: Amirhossein Roshanzadeh
-# 🎓 Studiengang: Informatik, Softwareentwicklung (Master)
-# 🏢 Praxispartner: Testo GmbH
+#  Entwickelt von: Amirhossein Roshanzadeh
+#  Studiengang: Informatik, Softwareentwicklung (Master)
+#  Praxispartner: Testo GmbH
 
 # 📚 Inhaltsverzeichnis
 Projektübersicht
